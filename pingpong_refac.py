@@ -18,8 +18,8 @@ class game:
         self.running = True
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(60) / 1000
-        font_size = 36
-        font = pygame.font.Font("/home/cheolho/game_dev/Roboto-Medium.ttf", font_size)
+        font_size = 50
+        self.font = pygame.font.Font("/home/cheolho/game_dev/Roboto-Medium.ttf", font_size)
 
 class ball:
     def __init__(self):
@@ -27,8 +27,8 @@ class ball:
         self.y=game.window_height/2
         self.color=(248, 182, 43)
         self.radius=10
-        self.speed=10
-        self.degree=random.uniform(0, math.pi*2)
+        self.speed=6
+        self.degree=random.choice([random.uniform(math.pi*(-(1/2.5)), math.pi*(1/2.5)) , random.uniform(math.pi*(1-(1/2.5)), math.pi*(1+(1/2.5)))])
 
     def move(self, dt):
         self.x+=self.speed*math.cos(self.degree)*dt
@@ -43,7 +43,7 @@ class player:
         self.y=game.window_height/2
         self.color=(198, 224, 120)
         self.width=10
-        self.height=60
+        self.height=80
         self.speed=7
         self.up=up_key
         self.down=down_key
@@ -76,13 +76,33 @@ class key:
 class collision:
     def check(self):
         if ball.x+ball.radius>=game.window_width:
-            ball.degree=math.pi-ball.degree
+            if player2.y<=ball.y<=player2.y+player2.height:
+                ball.degree=math.pi-ball.degree
+            else:
+                score.player1+=1
+                ball.__init__()
         if ball.x-ball.radius<=0:
-            ball.degree=math.pi-ball.degree
+            if player1.y<=ball.y<=player1.y+player1.height:
+                ball.degree=math.pi-ball.degree
+            else:
+                score.player2+=1
+                ball.__init__()
         if ball.y+ball.radius>=game.window_height:
             ball.degree=math.pi*2-ball.degree
         if ball.y-ball.radius<=0:
             ball.degree=math.pi*2-ball.degree
+
+class score:
+    def __init__(self):
+        self.player1=0
+        self.player2=0
+    def draw(self, window):
+        score1=game.font.render(str(self.player1), True, (255, 255, 255))
+        score2=game.font.render(str(self.player2), True, (255, 255, 255))
+        colron=game.font.render(":", True, (255, 255, 255))
+        window.blit(score1, (game.window_width/4, game.window_height/2-13))
+        window.blit(colron, (game.window_width/2, game.window_height/2-13))
+        window.blit(score2, (game.window_width*3/4, game.window_height/2-13))
 
 
 game = game()
@@ -91,12 +111,15 @@ key = key()
 collision = collision()
 player1 = player(0, pygame.K_w, pygame.K_s)
 player2 = player(game.window_width-10, pygame.K_i, pygame.K_k)
+score = score()
+
 game.__init__()
 ball.__init__()
 player1.__init__(0, pygame.K_w, pygame.K_s)
 player2.__init__(game.window_width-10, pygame.K_i, pygame.K_k)
 key.__init__()
 key.key_set()
+score.__init__()
 
 while game.running:
     for event in pygame.event.get():
@@ -114,8 +137,7 @@ while game.running:
     ball.draw(game.window)
     player1.draw(game.window)
     player2.draw(game.window)
+    score.draw(game.window)
     pygame.display.flip()
-    pygame.display.update()
-
 pygame.quit()
 
