@@ -19,7 +19,7 @@ class game:
         self.clock = pygame.time.Clock()
         self.dt = self.clock.tick(60) / 1000
         font_size = 50
-        self.font = pygame.font.Font("/home/cheolho/game_dev/Roboto-Medium.ttf", font_size)
+        self.font = pygame.font.Font("./Roboto-Medium.ttf", font_size)
 
 class ball:
     def __init__(self):
